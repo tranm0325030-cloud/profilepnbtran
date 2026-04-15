@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phan Nguyen Bao Tran (Tancy) – Veterinary Medicine</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1565C0;
+            --primary-dark: #0D47A1;
+            --primary-light: #42A5F5;
+            --accent: #00BCD4;
+            --bg-light: #F0F7FF;
+            --white: #FFFFFF;
+            --text-dark: #1A2332;
+            --text-muted: #5A6B80;
+            --border: #D6E4F0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-light); }
+        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 3px; }
+
+        /* View Toggle */
+        .view-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 4px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 14px;
+            padding: 5px;
+            box-shadow: 0 4px 24px rgba(21,101,192,0.18);
+            border: 1px solid rgba(21,101,192,0.12);
+        }
+        .view-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: 'Inter', sans-serif;
+        }
+        .view-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 14px rgba(21,101,192,0.35);
+        }
+        .view-btn:hover:not(.active) {
+            background: var(--bg-light);
+            color: var(--primary);
+        }
+
+        /* Mobile Frame */
+        .mobile-frame {
+            display: none;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        .mobile-frame.active { display: flex; }
+        .phone-mockup {
+            width: 390px;
+            max-height: 85vh;
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 20px 80px rgba(0,0,0,0.2), inset 0 0 0 3px #222, inset 0 0 0 5px #444;
+            overflow: hidden;
+            position: relative;
+        }
+        .phone-notch {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            height: 34px;
+            background: #111;
+            border-radius: 0 0 20px 20px;
+            margin: 0 auto;
+            width: 55%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .phone-notch::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: #1a1a2e;
+            border-radius: 50%;
+            border: 2px solid #333;
+        }
+        .phone-content {
+            overflow-y: auto;
+            max-height: calc(85vh - 34px);
+            padding: 0;
+        }
+        .phone-content::-webkit-scrollbar { width: 0; }
+
+        /* Desktop wrapper */
+        .desktop-view { display: block; }
+        .desktop-view.hidden { display: none; }
+
+        /* HERO */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(160deg, #0a1628 0%, #0D47A1 40%, #1565C0 70%, #1E88E5 100%);
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(66,165,245,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(0,188,212,0.1) 0%, transparent 50%);
+        }
+        /* DNA Helix Animation */
+        .dna-container {
+            position: absolute;
+            right: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 300px;
+            height: 600px;
+            opacity: 0.08;
+        }
+        .helix-strand {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .helix-dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: helixFloat 4s ease-in-out infinite;
+        }
+
+        /* Floating particles */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.06);
+            animation: float 20s infinite linear;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+        }
+        @keyframes helixFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 60px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        .hero-text h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: white;
+            line-height: 1.15;
+            margin-bottom: 8px;
+        }
+        .hero-text .nickname {
+            font-size: 1.1rem;
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .hero-text .title-line {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.8);
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin-bottom: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .title-line .line {
+            width: 40px;
+            height: 2px;
+            background: var(--accent);
+        }
+        .hero-contact {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+        .hero-contact a {
+            color: rgba(255,255,255,0.85);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        .hero-contact a:hover { color: var(--accent); }
+        .hero-contact a i {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,0.4);
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(8px); }
+        }
+
+        /* Profile Card in Hero */
+        .profile-card {
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 40px;
+            position: relative;
+        }
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 20%;
+            right: 20%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+        .profile-card h3 {
+            color: var(--accent);
+            font-size: 0.8rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        .profile-card p {
+            color: rgba(255,255,255,0.8);
+            line-height: 1.8;
+            font-size: 0.95rem;
+            font-weight: 300;
+        }
+
+        /* SECTIONS */
+        .section {
+            padding: 100px 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 50px;
+        }
+        .section-icon {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            box-shadow: 0 8px 24px rgba(21,101,192,0.25);
+        }
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+        .section-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Expertise */
+        .expertise-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .expertise-card {
+            background: white;
+            border-radius: 20px;
+            padding: 36px;
+            border: 1px solid var(--border);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .expertise-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+        .expertise-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(21,101,192,0.12);
+        }
+        .expertise-card:hover::after { transform: scaleX(1); }
+        .expertise-card .card-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-light);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        .expertise-card h4 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 16px;
+        }
+        .expertise-card ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .expertise-card ul li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-muted);
+            font-size: 0.92rem;
+        }
+        .expertise-card ul li::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 14px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--primary), var(--accent), var(--primary-light));
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            padding: 0;
+        }
+        .timeline-item:last-child { margin-bottom: 0; }
+        .timeline-dot {
+            position: absolute;
+            left: -33px;
+            top: 6px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid var(--primary);
+            z-index: 2;
+            box-shadow: 0 0 0 4px rgba(21,101,192,0.1);
+        }
+        .timeline-dot.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(0,188,212,0.2);
+        }
+        .timeline-card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px 32px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        .timeline-card:hover {
+            box-shadow: 0 8px 32px rgba(21,101,192,0.1);
+            border-color: var(--primary-light);
+        }
+        .timeline-date {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            background: var(--bg-light);
+            padding: 5px 14px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+        .timeline-card h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+        .timeline-card .role {
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .timeline-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        /* Rewards */
+        .rewards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        .reward-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+        .reward-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 48px rgba(21,101,192,0.12);
+        }
+        .reward-card .trophy {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, #FFD54F, #FFB300);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: white;
+            box-shadow: 0 6px 20px rgba(255,179,0,0.3);
+        }
+        .reward-card .reward-date {
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .reward-card h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            line-height: 1.4;
+        }
+
+        /* Languages & References */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+        .lang-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 20px;
+            padding: 36px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .lang-card .globe-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin-bottom: 16px;
+        }
+        .lang-card h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .lang-card p {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .ref-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .ref-card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        .ref-card:hover {
+            box-shadow: 0 8px 32px rgba(21,101,192,0.1);
+        }
+        .ref-card .ref-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 6px;
+        }
+        .ref-card .ref-title {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+        .ref-card .ref-phone {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .ref-card .ref-phone i { color: var(--primary); }
+
+        /* Footer */
+        footer {
+            background: linear-gradient(160deg, #0a1628, #0D47A1);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        footer p {
+            font-size: 0.85rem;
+            opacity: 0.6;
+        }
+        footer .footer-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+
+        /* Section BG alternation */
+        .section-alt {
+            background: white;
+            padding: 100px 0;
+        }
+        .section-alt .section {
+            padding: 0 60px;
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===================== MOBILE INNER STYLES ===================== */
+        .phone-content .m-hero {
+            background: linear-gradient(160deg, #0a1628, #0D47A1 50%, #1565C0);
+            padding: 30px 22px 36px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .phone-content .m-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 30%, rgba(0,188,212,0.12), transparent 60%);
+        }
+        .phone-content .m-hero * { position: relative; z-index: 1; }
+        .phone-content .m-hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.55rem;
+            color: white;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 4px;
+        }
+        .phone-content .m-hero .m-nick {
+            color: var(--accent);
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .phone-content .m-hero .m-title {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.82rem;
+            font-weight: 300;
+            margin-bottom: 18px;
+        }
+        .phone-content .m-contact {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+        .phone-content .m-contact a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 0.78rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .phone-content .m-contact a i {
+            font-size: 0.75rem;
+            width: 26px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.08);
+            border-radius: 8px;
+        }
+
+        .phone-content .m-section {
+            padding: 24px 20px;
+        }
+        .phone-content .m-section-alt {
+            background: white;
+        }
+        .phone-content .m-section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        .phone-content .m-section-icon {
+            width: 34px;
+            height: 34px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+        }
+        .phone-content .m-section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .phone-content .m-profile-text {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 16px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .phone-content .m-expertise-card {
+            background: white;
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid var(--border);
+            margin-bottom: 12px;
+        }
+        .phone-content .m-expertise-card h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .phone-content .m-expertise-card h4 i {
+            color: var(--primary);
+            font-size: 0.85rem;
+        }
+        .phone-content .m-expertise-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        .phone-content .m-expertise-card ul li {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            padding: 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .phone-content .m-expertise-card ul li::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            background: var(--accent);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .phone-content .m-timeline-item {
+            position: relative;
+            padding-left: 20px;
+            border-left: 2px solid var(--primary-light);
+            margin-bottom: 20px;
+            padding-bottom: 4px;
+        }
+        .phone-content .m-timeline-item:last-child { margin-bottom: 0; }
+        .phone-content .m-timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 4px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+        .phone-content .m-timeline-date {
+            font-size: 0.7rem;
+            color: var(--primary);
+            font-weight: 600;
+            background: var(--bg-light);
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+        }
+        .phone-content .m-timeline-item h4 {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+        .phone-content .m-timeline-item .role {
+            font-size: 0.78rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .phone-content .m-timeline-item p {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .phone-content .m-reward {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: white;
+            border-radius: 12px;
+            padding: 14px;
+            border: 1px solid var(--border);
+            margin-bottom: 10px;
+        }
+        .phone-content .m-reward .m-trophy {
+            width: 38px;
+            height: 38px;
+            min-width: 38px;
+            background: linear-gradient(135deg, #FFD54F, #FFB300);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: white;
+        }
+        .phone-content .m-reward .m-reward-date {
+            font-size: 0.7rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .phone-content .m-reward h4 {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .phone-content .m-lang {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 12px;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .phone-content .m-lang i {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .phone-content .m-lang h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .phone-content .m-ref-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            margin-bottom: 10px;
+        }
+        .phone-content .m-ref-card .ref-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 3px;
+        }
+        .phone-content .m-ref-card .ref-title {
+            font-size: 0.78rem;
+            color: var(--primary);
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .phone-content .m-ref-card .ref-phone {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+        .phone-content .m-ref-card .ref-phone i { color: var(--primary); font-size: 0.7rem; }
+
+        .phone-content .m-footer {
+            background: linear-gradient(160deg, #0a1628, #0D47A1);
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+        .phone-content .m-footer p {
+            font-size: 0.7rem;
+            opacity: 0.6;
+        }
+        .phone-content .m-footer .footer-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            opacity: 0.9;
+        }
+
+        /* Desktop responsive fallback */
+        @media (max-width: 900px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                padding: 0 30px;
+                gap: 30px;
+            }
+            .hero-text h1 { font-size: 2.2rem; }
+            .section { padding: 60px 30px; }
+            .section-alt .section { padding: 0 30px; }
+            .expertise-grid { grid-template-columns: 1fr; }
+            .rewards-grid { grid-template-columns: 1fr 1fr; }
+            .info-grid { grid-template-columns: 1fr; }
+            .ref-grid { grid-template-columns: 1fr; }
+            .view-toggle { top: 10px; right: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- VIEW TOGGLE BUTTONS -->
+<div class="view-toggle" id="viewToggle">
+    <button class="view-btn active" id="btnDesktop" onclick="switchView('desktop')">
+        <i class="fas fa-desktop"></i> Desktop
+    </button>
+    <button class="view-btn" id="btnMobile" onclick="switchView('mobile')">
+        <i class="fas fa-mobile-alt"></i> Mobile
+    </button>
+</div>
+
+<!-- ============== DESKTOP VIEW ============== -->
+<div class="desktop-view" id="desktopView">
+
+    <!-- HERO -->
+    <section class="hero">
+        <!-- Floating Particles -->
+        <div class="particle" style="width:6px;height:6px;left:10%;animation-delay:0s;animation-duration:18s;"></div>
+        <div class="particle" style="width:4px;height:4px;left:25%;animation-delay:4s;animation-duration:22s;"></div>
+        <div class="particle" style="width:8px;height:8px;left:45%;animation-delay:2s;animation-duration:16s;"></div>
+        <div class="particle" style="width:5px;height:5px;left:65%;animation-delay:6s;animation-duration:20s;"></div>
+        <div class="particle" style="width:3px;height:3px;left:80%;animation-delay:1s;animation-duration:24s;"></div>
+        <div class="particle" style="width:7px;height:7px;left:90%;animation-delay:3s;animation-duration:19s;"></div>
+        <div class="particle" style="width:5px;height:5px;left:35%;animation-delay:8s;animation-duration:21s;"></div>
+        <div class="particle" style="width:4px;height:4px;left:55%;animation-delay:10s;animation-duration:17s;"></div>
+
+        <div class="hero-content">
+            <div class="hero-text">
+                <div class="nickname">Tancy</div>
+                <h1>Phan Nguyễn<br>Bảo Trân</h1>
+                <div class="title-line">
+                    <span class="line"></span>
+                    Veterinary Medicine
+                </div>
+                <div class="hero-contact">
+                    <a href="tel:0862163750">
+                        <i class="fas fa-phone-alt"></i>
+                        086 216 3750
+                    </a>
+                    <a href="mailto:pnbtran2568@gmail.com">
+                        <i class="fas fa-envelope"></i>
+                        pnbtran2568@gmail.com
+                    </a>
+                </div>
+            </div>
+            <div class="profile-card">
+                <h3><i class="fas fa-microscope"></i> &nbsp;Profile</h3>
+                <p>Aspiring veterinary researcher specializing in animal health and disease epidemiology. Equipped with hands-on experience in molecular diagnostics and field studies, committed to advancing disease control strategies and improving animal welfare.</p>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>SCROLL</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- EXPERTISE -->
+    <div class="section-alt">
+        <section class="section fade-in">
+            <div class="section-header">
+                <div class="section-icon"><i class="fas fa-flask"></i></div>
+                <div>
+                    <div class="section-subtitle">What I Do</div>
+                    <h2 class="section-title">Expertise</h2>
+                </div>
+            </div>
+            <div class="expertise-grid">
+                <div class="expertise-card">
+                    <div class="card-icon"><i class="fas fa-heartbeat"></i></div>
+                    <h4>Animal Health Care</h4>
+                    <ul>
+                        <li>Animal nutrition</li>
+                        <li>Care and nurturing</li>
+                    </ul>
+                </div>
+                <div class="expertise-card">
+                    <div class="card-icon"><i class="fas fa-virus"></i></div>
+                    <h4>Virology Research</h4>
+                    <ul>
+                        <li>Disease epidemiology</li>
+                        <li>Genetic analysis</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- EXPERIENCE -->
+    <section class="section fade-in">
+        <div class="section-header">
+            <div class="section-icon"><i class="fas fa-briefcase"></i></div>
+            <div>
+                <div class="section-subtitle">Career Path</div>
+                <h2 class="section-title">Experiences</h2>
+            </div>
+        </div>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-card">
+                    <div class="timeline-date"><i class="far fa-calendar-alt"></i> Jan 2020 – Dec 2021</div>
+                    <h4>De Heus LLC</h4>
+                    <div class="role">Animal Nutrition Trainer</div>
+                    <p>Delivered training on feed formulation and animal nutrition, integrating veterinary knowledge to improve livestock performance and disease prevention.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot active"></div>
+                <div class="timeline-card">
+                    <div class="timeline-date"><i class="far fa-calendar-alt"></i> Aug 2022 – Present</div>
+                    <h4>De Heus LLC</h4>
+                    <div class="role">Product Management & Veterinarian</div>
+                    <p>Managing nutrition products and developing feeding strategies while applying veterinary expertise in animal health care, disease prevention, and herd management.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- EDUCATION -->
+    <div class="section-alt">
+        <section class="section fade-in">
+            <div class="section-header">
+                <div class="section-icon"><i class="fas fa-graduation-cap"></i></div>
+                <div>
+                    <div class="section-subtitle">Academic Background</div>
+                    <h2 class="section-title">Education</h2>
+                </div>
+            </div>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-date"><i class="far fa-calendar-alt"></i> 2018 – 2022</div>
+                        <h4>Can Tho University</h4>
+                        <div class="role">Veterinary Medicine</div>
+                        <p>Focused on animal health management, infectious disease diagnosis, and virology research. Trained in laboratory techniques including RT-PCR and genetic sequencing.</p>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot active"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-date"><i class="far fa-calendar-alt"></i> 2025 – Present</div>
+                        <h4>Master's Program</h4>
+                        <div class="role">Virology & Epidemiology</div>
+                        <p>Conducting research on viral diseases, molecular diagnostics, and epidemiological analysis to understand disease transmission and control.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- REWARDS -->
+    <section class="section fade-in">
+        <div class="section-header">
+            <div class="section-icon"><i class="fas fa-trophy"></i></div>
+            <div>
+                <div class="section-subtitle">Achievements</div>
+                <h2 class="section-title">Rewards</h2>
+            </div>
+        </div>
+        <div class="rewards-grid">
+            <div class="reward-card">
+                <div class="trophy"><i class="fas fa-award"></i></div>
+                <div class="reward-date">April 2021</div>
+                <h4>Scientific Research Award</h4>
+            </div>
+            <div class="reward-card">
+                <div class="trophy"><i class="fas fa-star"></i></div>
+                <div class="reward-date">December 2024</div>
+                <h4>Best Employee of the Year</h4>
+            </div>
+            <div class="reward-card">
+                <div class="trophy"><i class="fas fa-star"></i></div>
+                <div class="reward-date">December 2025</div>
+                <h4>Best Employee of the Year</h4>
+            </div>
+        </div>
+    </section>
+
+    <!-- LANGUAGES & REFERENCES -->
+    <div class="section-alt">
+        <section class="section fade-in">
+            <div class="section-header">
+                <div class="section-icon"><i class="fas fa-user-check"></i></div>
+                <div>
+                    <div class="section-subtitle">Languages & People</div>
+                    <h2 class="section-title">Languages & References</h2>
+                </div>
+            </div>
+            <div class="info-grid">
+                <div class="lang-card">
+                    <div class="globe-icon"><i class="fas fa-globe-americas"></i></div>
+                    <h4>English</h4>
+                    <p>Professional Proficiency</p>
+                </div>
+                <div class="ref-grid">
+                    <div class="ref-card">
+                        <div class="ref-name">PhD. Trần Minh Hiền</div>
+                        <div class="ref-title">International Product Manager</div>
+                        <div class="ref-phone">
+                            <i class="fas fa-phone-alt"></i>
+                            090 155 8692
+                        </div>
+                    </div>
+                    <div class="ref-card">
+                        <div class="ref-name">Assoc. Prof. Nguyễn Phúc Khánh</div>
+                        <div class="ref-title">Animal Obstetrics, Virology</div>
+                        <div class="ref-phone">
+                            <i class="fas fa-phone-alt"></i>
+                            097 916 0684
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-name">Phan Nguyễn Bảo Trân</div>
+        <p>© 2025 – Veterinary Medicine Professional Portfolio</p>
+    </footer>
+</div>
+
+<!-- ============== MOBILE VIEW ============== -->
+<div class="mobile-frame" id="mobileView">
+    <div class="phone-mockup">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+            <!-- Mobile Hero -->
+            <div class="m-hero">
+                <div class="m-nick">Tancy</div>
+                <h1>Phan Nguyễn Bảo Trân</h1>
+                <div class="m-title">Veterinary Medicine</div>
+                <div class="m-contact">
+                    <a href="tel:0862163750"><i class="fas fa-phone-alt"></i> 086 216 3750</a>
+                    <a href="mailto:pnbtran2568@gmail.com"><i class="fas fa-envelope"></i> pnbtran2568@gmail.com</a>
+                </div>
+            </div>
+
+            <!-- Profile -->
+            <div class="m-section">
+                <div class="m-section-header">
+                    <div class="m-section-icon"><i class="fas fa-microscope"></i></div>
+                    <h2 class="m-section-title">Profile</h2>
+                </div>
+                <div class="m-profile-text">
+                    Aspiring veterinary researcher specializing in animal health and disease epidemiology. Equipped with hands-on experience in molecular diagnostics and field studies, committed to advancing disease control strategies and improving animal welfare.
+                </div>
+            </div>
+
+            <!-- Expertise -->
+            <div class="m-section m-section-alt">
+                <div class="m-section-header">
+                    <div class="m-section-icon"><i class="fas fa-flask"></i></div>
+                    <h2 class="m-section-title">Expertise</h2>
+                </div>
+                <div class="m-expertise-card">
+                    <h4><i class="fas fa-heartbeat"></i> Animal Health Care</h4>
+                    <ul>
+                        <li>Animal nutrition</li>
+                        <li>Care and nurturing</li>
+                    </ul>
+                </div>
+                <div class="m-expertise-card">
+                    <h4><i class="fas fa-virus"></i> Virology Research</h4>
+                    <ul>
+                        <li>Disease epidemiology</li>
+                        <li>Genetic analysis</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Experience -->
+            <div class="m-section">
+                <div class="m-section-header">
+                    <div class="m-section-icon"><i class="fas fa-briefcase"></i></div>
+                    <h2 class="m-section-title">Experiences</h2>
+                </div>
+                <div class="m-timeline-item">
+                    <div class="m-timeline-date">Jan 2020 – Dec 2021</div>
+                    <h4>De Heus LLC</h4>
+                    <div class="role">Animal Nutrition Trainer</div>
+                    <p>Delivered training on feed formulation and animal nutrition, integrating veterinary knowledge to improve livestock performance and disease prevention.</p>
+                </div>
+                <div class="m-timeline-item">
+                    <div class="m-timeline-date">Aug 2022 – Present</div>
+                    <h4>De Heus LLC</h4>
+                    <div class="role">Product Management & Veterinarian</div>
+                    <p>Managing nutrition products and developing feeding strategies while applying veterinary expertise in animal health care, disease prevention, and herd management.</p>
+                </div>
+            </div>
+
+            <!-- Education -->
+            <div class="m-section m-section-alt">
+                <div class="m-section-header">
+                    <div class="m-section-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <h2 class="m-section-title">Education</h2>
+                </div>
+                <div class="m-timeline-item">
+                    <div class="m-timeline-date">2018 – 2022</div>
+                    <h4>Can Tho University</h4>
+                    <div class="role">Veterinary Medicine</div>
+                    <p>Focused on animal health management, infectious disease diagnosis, and virology research. Trained in laboratory techniques including RT-PCR and genetic sequencing.</p>
+                </div>
+                <div class="m-timeline-item">
+                    <div class="m-timeline-date">2025 – Present</div>
+                    <h4>Master's Program</h4>
+                    <div class="role">Virology & Epidemiology</div>
+                    <p>Conducting research on viral diseases, molecular diagnostics, and epidemiological analysis to understand disease transmission and control.</p>
+                </div>
+            </div>
+
+            <!-- Rewards -->
+            <div class="m-section">
+                <div class="m-section-header">
+                    <div class="m-section-icon"><i class="fas fa-trophy"></i></div>
+                    <h2 class="m-section-title">Rewards</h2>
+                </div>
+                <div class="m-reward">
+                    <div class="m-trophy"><i class="fas fa-award"></i></div>
+                    <div>
+                        <div class="m-reward-date">April 2021</div>
+                        <h4>Scientific Research Award</h4>
+                    </div>
+                </div>
+                <div class="m-reward">
+                    <div class="m-trophy"><i class="fas fa-star"></i></div>
+                    <div>
+                        <div class="m-reward-date">December 2024</div>
+                        <h4>Best Employee of the Year</h4>
+                    </div>
+                </div>
+                <div class="m-reward">
+                    <div class="m-trophy"><i class="fas fa-star"></i></div>
+                    <div>
+                        <div class="m-reward-date">December 2025</div>
+                        <h4>Best Employee of the Year</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Languages -->
+            <div class="m-section m-section-alt">
+                <div class="m-section-header">
+                    <div class="m-section-icon"><i class="fas fa-globe-americas"></i></div>
+                    <h2 class="m-section-title">Languages</h2>
+                </div>
+                <div class="m-lang">
+                    <i class="fas fa-globe-americas"></i>
+                    <h4>English</h4>
+                </div>
+            </div>
+
+            <!-- References -->
+            <div class="m-section">
+                <div class="m-section-header">
+                    <div class="m-section-icon"><i class="fas fa-user-check"></i></div>
+                    <h2 class="m-section-title">References</h2>
+                </div>
+                <div class="m-ref-card">
+                    <div class="ref-name">PhD. Trần Minh Hiền</div>
+                    <div class="ref-title">International Product Manager</div>
+                    <div class="ref-phone"><i class="fas fa-phone-alt"></i> 090 155 8692</div>
+                </div>
+                <div class="m-ref-card">
+                    <div class="ref-name">Assoc. Prof. Nguyễn Phúc Khánh</div>
+                    <div class="ref-title">Animal Obstetrics, Virology</div>
+                    <div class="ref-phone"><i class="fas fa-phone-alt"></i> 097 916 0684</div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="m-footer">
+                <div class="footer-name">Phan Nguyễn Bảo Trân</div>
+                <p>© 2025 – Veterinary Medicine Professional Portfolio</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // View Toggle
+    function switchView(view) {
+        const desktop = document.getElementById('desktopView');
+        const mobile = document.getElementById('mobileView');
+        const btnD = document.getElementById('btnDesktop');
+        const btnM = document.getElementById('btnMobile');
+
+        if (view === 'desktop') {
+            desktop.classList.remove('hidden');
+            mobile.classList.remove('active');
+            btnD.classList.add('active');
+            btnM.classList.remove('active');
+            document.body.style.background = 'var(--bg-light)';
+        } else {
+            desktop.classList.add('hidden');
+            mobile.classList.add('active');
+            btnD.classList.remove('active');
+            btnM.classList.add('active');
+            document.body.style.background = 'linear-gradient(135deg, #e8f0fe 0%, #d4e4f7 100%)';
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Scroll animations
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // Parallax-like subtle effect on hero particles
+    document.addEventListener('mousemove', (e) => {
+        const particles = document.querySelectorAll('.particle');
+        const x = (e.clientX / window.innerWidth - 0.5) * 20;
+        const y = (e.clientY / window.innerHeight - 0.5) * 20;
+        particles.forEach((p, i) => {
+            const speed = (i + 1) * 0.3;
+            p.style.transform = `translate(${x * speed}px, ${y * speed}px)`;
+        });
+    });
+</script>
+
+</body>
+</html>
